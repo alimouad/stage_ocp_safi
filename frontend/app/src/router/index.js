@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import axiosClient from '@/axios.js';
-import Login from '@/pages/auth/Login.vue';  
-import Register from '@/pages/auth/Register.vue';
-import Home from '@/pages/Home.vue';
+import api from '@/services/api';
+import Login from '@/views/auth/Login.vue';
+import Dashboard from '@/views/dashbord/Dashboard.vue';  
+
 
 
 
@@ -11,38 +11,47 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'home',
-            component: Home,
+            redirect: '/dashboard',
         },
+        {
+            path: '/login',
+            name: 'login',
+            component: Login,
+        },
+        {
+            path: '/dashboard',
+            name: 'dashboard',
+            component: Dashboard,
+        }
     ]
       
 });
 
-router.beforeEach(async (to) => {
-    const isAdminRoute = to.path.startsWith('/admin');
+// router.beforeEach(async (to) => {
+//     const isAdminRoute = to.path.startsWith('/admin');
 
-    if (!isAdminRoute) {
-        return true;
-    }
+//     if (!isAdminRoute) {
+//         return true;
+//     }
 
-    const hasToken = Boolean(localStorage.getItem('auth_token'));
+//     const hasToken = Boolean(localStorage.getItem('token'));
 
-    if (!hasToken) {
-        return { name: 'login' };
-    }
+//     if (!hasToken) {
+//         return { name: 'login' };
+//     }
 
-    try {
-        const response = await axiosClient.get('/user');
-        const role = response.data?.role ?? '';
+//     try {
+//         const response = await api.get('/user');
+//         const role = response.data?.role ?? '';
 
-        if (role !== 'admin') {
-            return { name: 'home' };
-        }
+//         if (role !== 'admin') {
+//             return { name: 'login' };
+//         }
 
-        return true;
-    } catch {
-        return { name: 'login' };
-    }
-});
+//         return true;
+//     } catch {
+//         return { name: 'login' };
+//     }
+// });
 
 export default router;
