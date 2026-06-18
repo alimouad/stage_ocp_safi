@@ -1,0 +1,165 @@
+@startuml GeoGrad_UseCase_Clean
+
+left to right direction
+
+'========================
+' THEME
+'========================
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam BackgroundColor #f0f3eb
+
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #1e4a49
+    FontColor #1e2d2c
+    FontSize 12
+}
+
+skinparam actor {
+    BorderColor #1e4a49
+    BackgroundColor #f8faef
+    FontColor #1e2d2c
+}
+
+skinparam ArrowColor #1e4a49
+skinparam ArrowThickness 1.2
+
+'========================
+' ACTORS
+'========================
+actor "Étudiant" as ETU
+actor "Professeur" as PROF
+actor "Coordinateur" as COORD
+actor "Admin" as ADMIN
+
+'========================
+' SYSTEM BOUNDARY
+'========================
+rectangle "GeoGrad — Gestion PFE (FSBM)" {
+
+  '------------------------
+  ' AUTH
+  '------------------------
+  package "Authentification" {
+    usecase UC_LOGIN as "S'authentifier"
+    usecase UC_LOGOUT as "Se déconnecter"
+    usecase UC_PASS as "Changer mot de passe"
+  }
+
+  '------------------------
+  ' ETUDIANT
+  '------------------------
+  package "Espace Étudiant" {
+    usecase UC_BROWSE as "Consulter projets"
+    usecase UC_APPLY as "Postuler projet"
+    usecase UC_TRACK as "Suivre postulations"
+    usecase UC_PROJECT as "Voir projet PFE"
+    usecase UC_UPLOAD as "Déposer livrables"
+    usecase UC_SIG as "Consulter données SIG"
+    usecase UC_DEF as "Consulter soutenance"
+    usecase UC_MSG_E as "Messagerie encadrant"
+  }
+
+  '------------------------
+  ' PROF
+  '------------------------
+  package "Espace Professeur" {
+    usecase UC_CREATE as "Proposer sujet PFE"
+    usecase UC_VALIDATE as "Valider dépôts"
+    usecase UC_FOLLOW as "Suivre avancement"
+    usecase UC_MSG_P as "Messagerie étudiants"
+  }
+
+  '------------------------
+  ' COORD
+  '------------------------
+  package "Espace Coordinateur" {
+    usecase UC_SUP as "Superviser projets"
+    usecase UC_ASSIGN as "Affecter étudiants"
+    usecase UC_SOUT as "Gérer soutenances"
+    usecase UC_STATS as "Statistiques département"
+  }
+
+  '------------------------
+  ' ADMIN
+  '------------------------
+  package "Administration" {
+    usecase UC_USERS as "Gérer utilisateurs"
+    usecase UC_IMPORT as "Import / Export données"
+    usecase UC_STRUCT as "Structure académique"
+    usecase UC_GLOBAL as "Statistiques globales"
+  }
+}
+
+'========================
+' COMMON AUTH
+'========================
+ETU --> UC_LOGIN
+PROF --> UC_LOGIN
+COORD --> UC_LOGIN
+ADMIN --> UC_LOGIN
+
+ETU --> UC_LOGOUT
+PROF --> UC_LOGOUT
+COORD --> UC_LOGOUT
+ADMIN --> UC_LOGOUT
+
+ETU --> UC_PASS
+PROF --> UC_PASS
+COORD --> UC_PASS
+
+'========================
+' ETUDIANT ACTIONS
+'========================
+ETU --> UC_BROWSE
+ETU --> UC_APPLY
+ETU --> UC_TRACK
+ETU --> UC_PROJECT
+ETU --> UC_UPLOAD
+ETU --> UC_SIG
+ETU --> UC_DEF
+ETU --> UC_MSG_E
+
+'========================
+' PROF ACTIONS
+'========================
+PROF --> UC_CREATE
+PROF --> UC_VALIDATE
+PROF --> UC_FOLLOW
+PROF --> UC_MSG_P
+
+'========================
+' COORD ACTIONS
+'========================
+COORD --> UC_SUP
+COORD --> UC_ASSIGN
+COORD --> UC_SOUT
+COORD --> UC_STATS
+
+'========================
+' ADMIN ACTIONS
+'========================
+ADMIN --> UC_USERS
+ADMIN --> UC_IMPORT
+ADMIN --> UC_STRUCT
+ADMIN --> UC_GLOBAL
+
+'========================
+' INCLUDE / EXTEND (CLEAR)
+'========================
+
+' Postuler dépend de consultation
+UC_APPLY .> UC_BROWSE : <<include>>
+
+' Suivi dépend de postulation
+UC_TRACK .> UC_APPLY : <<include>>
+
+' Proposer sujet nécessite SIG
+UC_CREATE .> UC_SIG : <<include>>
+
+' Import étend gestion users
+UC_IMPORT .> UC_USERS : <<extend>>
+
+@enduml

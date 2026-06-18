@@ -1,0 +1,91 @@
+@startuml
+skinparam handwritten false
+skinparam monochrome false
+skinparam shadowing true
+skinparam class {
+    BackgroundColor White
+    BorderColor #1A1A1A
+    ArrowColor #1A1A1A
+}
+
+enum Role {
+    HSE_ADMIN
+    OPERATOR
+    AUDITOR
+}
+
+enum AlertStatus {
+    PENDING
+    ONGOING
+    RESOLVED
+}
+
+enum FactoryZone {
+    ZONE_A_SULFURIC
+    ZONE_B_PHOSPHORIC
+    ZONE_C_FERTILIZER
+    ZONE_D_PORT
+}
+
+class User {
+    + id : bigint
+    + name : String
+    + email : String
+    + password : String
+    + role : Role
+}
+
+class EmissionPoint {
+    + id : bigint
+    + code : String
+    + name : String
+    + description : String
+    + latitude : double
+    + longitude : double
+    + factory_zone : FactoryZone
+}
+
+class Substance {
+    + id : bigint
+    + code : String
+    + name : String
+    + unit : String
+}
+
+class Threshold {
+    + id : bigint
+    + max_value : double
+    + description : String
+}
+
+class Measurement {
+    + id : bigint
+    + value : double
+    + measured_at : DateTime
+    + checkThreshold() : boolean
+}
+
+class Alert {
+    + id : bigint
+    + message : String
+    + status : AlertStatus
+    + created_at : DateTime
+}
+
+class Statistique {
+    + id : bigint
+    + total_measurements : int
+    + normal_measurements : int
+    + ongoing_alerts : int
+    + resolved_alerts : int
+    + alerts_by_substance : json
+}
+
+' Relations
+User "1" -- "0..*" EmissionPoint : "supervises >"
+EmissionPoint "1" *-- "0..*" Measurement : "contains >"
+Substance "1" -- "0..*" Measurement : "characterizes >"
+Substance "1" -- "1" Threshold : "has >"
+Measurement "1" -- "0..1" Alert : "triggers >"
+
+@endum  
