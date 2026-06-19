@@ -1,3 +1,4 @@
+version: '3.8'
 
 services:
   backend:
@@ -9,9 +10,11 @@ services:
       - ./backend:/var/www/html  
     depends_on:
       - postgres
+    # Artisan serve command works flawlessly here
     command: php artisan serve --host=0.0.0.0 --port=8000
+    networks:
+      - ocp_network
 
-  
   postgres:
     image: postgis/postgis:17-3.5
     container_name: postgres
@@ -23,7 +26,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgtables:/var/lib/postgresql/data
+      - pgtables:/var/lib/postgresql/data 
+    networks:
+      - ocp_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -36,9 +41,11 @@ services:
       - "5050:80"
     depends_on:
       - postgres
+    networks:
+      - ocp_network
 
   frontend:
-    image: node:20
+    image: node:20-alpine 
     container_name: frontend
     working_dir: /app
     volumes:
@@ -48,6 +55,14 @@ services:
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     environment:
       - CHOKIDAR_USEPOLLING=true
+    networks:
+      - ocp_network
+    depends_on:
+      - backend
+
+networks:
+  ocp_network:
+    driver: bridge
 
 volumes:
   pgtables:
