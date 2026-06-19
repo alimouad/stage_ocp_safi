@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
         error.value = null
         try {
             // Requête l-Laravel Backend via Axios
-            const response = await api.post('/auth/login', credentials)
+            const response = await api.post('/login', credentials)
             
             // Extraction dyal data (b7al l-format dyal Laravel Sanctum wla JWT)
             const responseData = response.data

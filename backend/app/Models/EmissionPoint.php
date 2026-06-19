@@ -25,4 +25,4 @@ class EmissionPoint extends Model
     {
         return $this->hasMany(Measurement::class);
     }
-}   
+}       
