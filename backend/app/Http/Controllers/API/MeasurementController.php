@@ -10,6 +10,24 @@ use Illuminate\Http\Request;
 class MeasurementController extends Controller
 {
     /**
+     * Get recent measurements for the telemetry stream.
+     */
+    public function index()
+    {
+        $measurements = Measurement::with([
+            'emissionPoint:id,code,name',
+            'substance:id,code,name,unit',
+            'substance.threshold:id,substance_id,max_value',
+            'alert:id,measurement_id,status',
+        ])
+            ->latest('measured_at')
+            ->limit(50)
+            ->get();
+
+        return response()->json($measurements, 200);
+    }
+
+    /**
      * Store a new measurement (Real-time IoT stream simulation)
      */
     public function store(Request $request)

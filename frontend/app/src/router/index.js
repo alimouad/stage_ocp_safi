@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import api from '@/services/api';
 import Login from '@/views/auth/Login.vue';
 import Dashboard from '@/views/dashbord/Dashboard.vue';  
-
-
+import EmissionPoints from '@/views/emission-points/EmissionPoints.vue';
+import MeasurementCreate from '@/views/measurements/MeasurementCreate.vue';
+import ImportCsv from '@/views/imports/ImportCsv.vue';
+import Alerts from '@/views/alerts/Alerts.vue';
 
 
 const router = createRouter({
@@ -22,36 +23,52 @@ const router = createRouter({
             path: '/dashboard',
             name: 'dashboard',
             component: Dashboard,
-        }
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/emission-points',
+            name: 'emission-points',
+            component: EmissionPoints,
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/measurements',
+            name: 'measurement-create',
+            component: MeasurementCreate,
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/measurements/import',
+            name: 'measurement-import',
+            component: ImportCsv,
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/alerts',
+            name: 'alerts',
+            component: Alerts,
+            meta: { requiresAuth: true },
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            redirect: '/dashboard',
+        },
     ]
       
 });
 
-// router.beforeEach(async (to) => {
-//     const isAdminRoute = to.path.startsWith('/admin');
+router.beforeEach((to) => {
+    const hasToken = Boolean(localStorage.getItem('token'));
 
-//     if (!isAdminRoute) {
-//         return true;
-//     }
+    if (to.meta.requiresAuth && !hasToken) {
+        return { name: 'login' };
+    }
 
-//     const hasToken = Boolean(localStorage.getItem('token'));
+    if (to.name === 'login' && hasToken) {
+        return { name: 'dashboard' };
+    }
 
-//     if (!hasToken) {
-//         return { name: 'login' };
-//     }
-
-//     try {
-//         const response = await api.get('/user');
-//         const role = response.data?.role ?? '';
-
-//         if (role !== 'admin') {
-//             return { name: 'login' };
-//         }
-
-//         return true;
-//     } catch {
-//         return { name: 'login' };
-//     }
-// });
+    return true;
+});
 
 export default router;

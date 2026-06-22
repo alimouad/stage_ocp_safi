@@ -3,25 +3,36 @@ import { ref, computed } from 'vue'
 import api from '@/services/api' 
 
 export const useAuthStore = defineStore('auth', () => {
+    const readStoredUser = () => {
+        const storedUser = localStorage.getItem('user')
+
+        if (!storedUser) {
+            return null
+        }
+
+        try {
+            return JSON.parse(storedUser)
+        } catch {
+            localStorage.removeItem('user')
+            localStorage.removeItem('role')
+            localStorage.removeItem('token')
+            return null
+        }
+    }
 
     const token = ref(localStorage.getItem('token') || null)
-    const user = ref(JSON.parse(localStorage.getItem('user')) || null)
+    const user = ref(readStoredUser())
     const role = ref(localStorage.getItem('role') || null)
     const loading = ref(false)
     const error = ref(null)
 
     const isAuthenticated = computed(() => !!token.value)
     
-    // Khkhossossan had l-getters m9awdin bach t-man3/t-khlli un composant y-ban f l-Front-end
     const isHseAdmin = computed(() => role.value === 'HSE_ADMIN')
     const isOperator = computed(() => role.value === 'OPERATOR')
     const isAuditor = computed(() => role.value === 'AUDITOR')
 
-    // ==========================================
-    // 3. ACTIONS (Les Méthodes / API Calls)
-    // ==========================================
-    
-    // Fonction d Login li t-7tajiha f la page Login.vue
+
     async function login(credentials) {
         loading.value = true
         error.value = null
@@ -54,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
     async function logout() {
         try {
             // Nettoyage f l-Backend hwa l-auwal (Optional but professional)
-            await api.post('/auth/logout')
+            await api.post('/logout')
         } catch (err) {
             console.error('Logout error on backend:', err)
         } finally {

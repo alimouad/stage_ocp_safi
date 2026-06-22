@@ -48,4 +48,15 @@ class EmissionPointController extends Controller
 
         return response()->json(['message' => 'Emission point created successfully', 'data' => $point], 211);
     }
+
+    /**
+     * Delete an emission point (HSE_ADMIN Only)
+     */
+    public function destroy(int $id)
+    {
+        $point = EmissionPoint::findOrFail($id);
+        $point->delete();
+
+        return response()->json(['message' => 'Emission point deleted successfully'], 200);
+    }
 }
